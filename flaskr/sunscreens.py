@@ -27,9 +27,9 @@ def up(screen_id):
     print "relais on "
     GPIO.output(17,GPIO.HIGH)
     time.sleep(1)
-    left_event(50)
-    time.sleep(2)
-    left_event(0)
+    motor_event(255)
+    time.sleep(3)
+    motor_event(0)
     time.sleep(1)
     GPIO.output(17,GPIO.LOW)    
     return render_template('sunscreens/sunscreens.html')
@@ -40,9 +40,9 @@ def down(screen_id):
     print "relais off"
     GPIO.output(17,GPIO.HIGH)
     time.sleep(1)
-    left_event(-50)
-    time.sleep(2)
-    left_event(0)
+    motor_event(-255)
+    time.sleep(3)
+    motor_event(0)
     time.sleep(1)
     GPIO.output(17,GPIO.LOW)    
     return render_template('sunscreens/sunscreens.html')
@@ -56,8 +56,7 @@ MOTOR_1_C   = 23
 MOTOR_1_CC  = 24
 
 # Motor speed 0 (off) to 255 (max speed)
-leftMotorSpeed = 0
-rightMotorSpeed = 0
+currentMotorSpeed = 0
 
 # create a pigpio object, that accesses the pigpiod deamon (which handles the PWM to the motors)
 pi = pigpio.pi()
@@ -76,20 +75,31 @@ def turnOffMotors():
 atexit.register(turnOffMotors)
 
 
-def left_event(speed):
-    global leftMotorSpeed
-    leftMotorSpeed = speed
-
-    if leftMotorSpeed == 0:
-        pi.set_PWM_dutycycle(MOTOR_1_C,  0)
-        pi.set_PWM_dutycycle(MOTOR_1_CC, 0)
-    elif leftMotorSpeed > 0:
-        pi.set_PWM_dutycycle(MOTOR_1_C,  leftMotorSpeed)
-        pi.set_PWM_dutycycle(MOTOR_1_CC, 0)
+def motor_event(newSpeed):
+    global currentMotorSpeed
+    speedrange = range(0)
+    if (newSpeed > currentMotorSpeed):
+      speedrange = range(currentMotorSpeed, newSpeed, 10)
     else:
-        pi.set_PWM_dutycycle(MOTOR_1_C,  0)
-        pi.set_PWM_dutycycle(MOTOR_1_CC, abs(leftMotorSpeed))
+      speedrange = reversed(range(newSpeed, currentMotorSpeed, 10))
+    
+    for speed in speedrange:
+      if speed == 0:
+          pi.set_PWM_dutycycle(MOTOR_1_C,  0)
+          pi.set_PWM_dutycycle(MOTOR_1_CC, 0)
+      elif speed > 0:
+          pi.set_PWM_dutycycle(MOTOR_1_C,  speed)
+          pi.set_PWM_dutycycle(MOTOR_1_CC, 0)
+      else:
+          pi.set_PWM_dutycycle(MOTOR_1_C,  0)
+          pi.set_PWM_dutycycle(MOTOR_1_CC, abs(speed))
+      time.sleep(0.02)
 
-    print(" LEFT", leftMotorSpeed)
+    if newSpeed == 0:
+        pi.set_PWM_dutycycle(MOTOR_1_C,  0)
+        pi.set_PWM_dutycycle(MOTOR_1_CC, 0)
+
+    currentMotorSpeed = newSpeed
+    print("Motor speed: ", currentMotorSpeed)
 
 
