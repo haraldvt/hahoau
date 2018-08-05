@@ -1,0 +1,29 @@
+
+{% extends 'base.html' %}
+
+{% block header %}
+  <h1>{% block title %} Sunscreens {% endblock %}</h1>
+{% endblock %}
+
+{% block content %}
+
+  <label for="Screen_1">Sunscreen 1</label>
+  <form action="{{ url_for('sunscreens.up', screen_id=1) }}" method="post">
+    <input type="submit" value="Up">
+  </form>
+  <form action="{{ url_for('sunscreens.down', screen_id=1) }}" method="post">
+    <input type="submit" value="Down">
+  </form>
+  <hr>
+  
+  <label for="Screen_4">Sunscreen 4</label>
+  <form action="{{ url_for('sunscreens.up', screen_id=4) }}" method="post">
+    <input type="submit" value="Up">
+  </form>
+  <form action="{{ url_for('sunscreens.down', screen_id=4) }}" method="post">
+    <input type="submit" value="Down">
+  </form>
+  <hr>
+  
+  
+{% endblock %}
