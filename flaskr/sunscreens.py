@@ -23,21 +23,29 @@ def show():
 
 @bp.route('/<int:screen_id>/up', methods=('POST',))
 def up(screen_id):
-    post = 'up'
+    flash('up')
     print "relais on "
     GPIO.output(17,GPIO.HIGH)
+    time.sleep(1)
     left_event(50)
     time.sleep(2)
-    return post
+    left_event(0)
+    time.sleep(1)
+    GPIO.output(17,GPIO.LOW)    
+    return render_template('sunscreens/sunscreens.html')
 
 @bp.route('/<int:screen_id>/down', methods=('POST',))
 def down(screen_id):
-    post = 'down'
+    flash('down')
     print "relais off"
-    GPIO.output(17,GPIO.LOW)    
+    GPIO.output(17,GPIO.HIGH)
+    time.sleep(1)
     left_event(-50)
     time.sleep(2)
-    return post
+    left_event(0)
+    time.sleep(1)
+    GPIO.output(17,GPIO.LOW)    
+    return render_template('sunscreens/sunscreens.html')
 
 
 GPIO.setmode(GPIO.BCM)
