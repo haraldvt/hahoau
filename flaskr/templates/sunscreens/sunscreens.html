@@ -15,12 +15,39 @@
     <input type="submit" value="Down">
   </form>
   <hr>
+
+  <label for="Screen_2">Sunscreen 2</label>
+  <form action="{{ url_for('sunscreens.up', screen_id=2) }}" method="post">
+    <input type="submit" value="Up">
+  </form>
+  <form action="{{ url_for('sunscreens.down', screen_id=2) }}" method="post">
+    <input type="submit" value="Down">
+  </form>
+  <hr>
+
+  <label for="Screen_3">Sunscreen 3</label>
+  <form action="{{ url_for('sunscreens.up', screen_id=3) }}" method="post">
+    <input type="submit" value="Up">
+  </form>
+  <form action="{{ url_for('sunscreens.down', screen_id=3) }}" method="post">
+    <input type="submit" value="Down">
+  </form>
+  <hr>
   
   <label for="Screen_4">Sunscreen 4</label>
   <form action="{{ url_for('sunscreens.up', screen_id=4) }}" method="post">
     <input type="submit" value="Up">
   </form>
   <form action="{{ url_for('sunscreens.down', screen_id=4) }}" method="post">
+    <input type="submit" value="Down">
+  </form>
+  <hr>
+  
+  <label for="Screen_all">All sunscreens</label>
+  <form action="{{ url_for('sunscreens.up', screen_id=0) }}" method="post">
+    <input type="submit" value="Up">
+  </form>
+  <form action="{{ url_for('sunscreens.down', screen_id=0) }}" method="post">
     <input type="submit" value="Down">
   </form>
   <hr>
