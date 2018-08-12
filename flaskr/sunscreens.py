@@ -17,7 +17,7 @@ bp = Blueprint('sunscreens', __name__, url_prefix='/sunscreens')
 
 RELAY_SUNSCREEN = [17, 18, 27, 22]
 RELAY_MOTOR_POWER = 25
-RELAY_MOTOR_OVERLOAD = 25
+RELAY_MOTOR_OVERLOAD = 4
 
 MOTOR_1_C   = 23  # clockwise
 MOTOR_1_CC  = 24  # counterclockwise
@@ -34,6 +34,7 @@ GPIO.setup(RELAY_MOTOR_POWER, GPIO.OUT)
 timestamp_motor_power = 0
 status_motor_power = GPIO.LOW
 GPIO.output(RELAY_MOTOR_POWER, status_motor_power)
+GPIO.setup(RELAY_MOTOR_OVERLOAD, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
 
 # create a pigpio object, that accesses the pigpiod deamon (which handles the PWM to the motors)
 pi = pigpio.pi()
@@ -77,7 +78,17 @@ def control(screen_id, movement, percentage):
     if (movement == 'down'):
       direction = -1
     motor_event( int(((255.0 / 100.0) * percentage) * direction) )
-    time.sleep(3)
+    
+    # measure time, and measure overload
+    start_time = time.time()
+    overload = GPIO.input(RELAY_MOTOR_OVERLOAD)
+    print(overload)
+    while (((time.time() - start_time) < 5.0) and (overload == 0)):
+      time.sleep(0.1)
+      overload = GPIO.input(RELAY_MOTOR_OVERLOAD)
+      if (overload):
+        print("motor overload")
+    
     motor_event(0)
     
     time.sleep(1)
@@ -130,8 +141,12 @@ def ensure_motor_power():
   if (status_motor_power == GPIO.LOW):
     print("Motor power switched on now")
     status_motor_power = GPIO.HIGH
-  GPIO.output(RELAY_MOTOR_POWER, status_motor_power)
-  timestamp_motor_power = time.time()
+    GPIO.output(RELAY_MOTOR_POWER, status_motor_power)
+    timestamp_motor_power = time.time()
+    time.sleep(4)  # give power supply time to power up
+  else: 
+    GPIO.output(RELAY_MOTOR_POWER, status_motor_power)
+    timestamp_motor_power = time.time()
 
 
 def check_motor_power():
@@ -142,8 +157,9 @@ def check_motor_power():
         print("Motor power switched off now")
         status_motor_power = GPIO.LOW
         GPIO.output(RELAY_MOTOR_POWER, status_motor_power)
+        time.sleep(4)  # give power supply time to power down 
 
 
 sched = BackgroundScheduler() #daemon=True
-sched.add_job(check_motor_power, 'interval', seconds = 10)
+sched.add_job(check_motor_power, 'interval', seconds = 20)
 sched.start()
