@@ -7,6 +7,16 @@
 
 {% block content %}
 
+  <label for="calibrate">calibrate #4</label>
+  <form action="{{ url_for('sunscreens.calup', screen_id=4) }}" method="post">
+    <input type="submit" value="Calibrate Up">
+  </form>
+  <form action="{{ url_for('sunscreens.caldown', screen_id=4) }}" method="post">
+    <input type="submit" value="Calibrate Down">
+  </form>
+  <hr>
+
+
   <label for="Screen_1">Sunscreen 1</label>
   <form action="{{ url_for('sunscreens.up', screen_id=1) }}" method="post">
     <input type="submit" value="Up">
