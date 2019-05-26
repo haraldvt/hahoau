@@ -5,6 +5,8 @@ import RPi.GPIO as GPIO
 import time
 import pigpio
 import atexit
+import logging
+
 
 RELAY_SUNSCREEN = [17, 18, 27, 22]
 RELAY_MOTOR_POWER = 25
@@ -48,7 +50,7 @@ def control(screen_id, movement, percentage, ms=5000.0):
       time.sleep(0.1)
       overload = GPIO.input(RELAY_MOTOR_OVERLOAD)
       if (overload):
-        print("motor overload")
+        logger.info("motor overload")
     
     motor_event(0)
     
@@ -62,7 +64,7 @@ def control(screen_id, movement, percentage, ms=5000.0):
 def turnOffMotors():
   global pi
   if not pi is None:
-      print(" All off")
+      logger.info("All motors off")
       pi.set_PWM_dutycycle(MOTOR_1, 0)
       pi.set_PWM_dutycycle(MOTOR_2, 0)
 
@@ -94,13 +96,13 @@ def motor_event(newSpeed):
         pi.set_PWM_dutycycle(MOTOR_2, 0)
 
     currentMotorSpeed = newSpeed
-    print("Motor speed: ", currentMotorSpeed)
+    logger.debug("Motor speed: ", currentMotorSpeed)
 
 def ensure_motor_power():
   global status_motor_power
   global timestamp_motor_power
   if (status_motor_power == GPIO.LOW):
-    print("Motor power switched on now")
+    logger.info("Motor power switched on now")
     status_motor_power = GPIO.HIGH
     GPIO.output(RELAY_MOTOR_POWER, status_motor_power)
     timestamp_motor_power = time.time()
@@ -115,7 +117,7 @@ def check_motor_power():
     global timestamp_motor_power
     if ((time.time() - timestamp_motor_power) > 60.0):
       if (status_motor_power == GPIO.HIGH):
-        print("Motor power switched off now")
+        logger.info("Motor power switched off now")
         status_motor_power = GPIO.LOW
         GPIO.output(RELAY_MOTOR_POWER, status_motor_power)
         time.sleep(4)  # give power supply time to power down 
@@ -124,6 +126,10 @@ def check_motor_power():
 
 def init():
   global pi
+  global logger
+  
+  logger = logging.getLogger(__name__)
+  logger.info('init')
   for rs in RELAY_SUNSCREEN:
     GPIO.setup(rs, GPIO.OUT)
     GPIO.output(rs, GPIO.HIGH)
@@ -142,4 +148,5 @@ def init():
   atexit.register(turnOffMotors)
 
 def exit():
+  logger.info('exit')
   sched.remove_job('suncscreens_interval')

@@ -12,6 +12,7 @@ class NoRunningFilter(logging.Filter):
         return False
 
 def init():
+  global logger
 
   my_filter = NoRunningFilter()
   logging.getLogger("apscheduler.scheduler").addFilter(my_filter)
@@ -19,14 +20,14 @@ def init():
   
   logging.basicConfig(filename='logging.log',level=logging.INFO)
   logger = logging.getLogger(__name__)
-  logging.info('Start')
+  logger.info('Start')
   buttons.init()
   sunscreens.init()
   
 def exit():
   buttons.exit()
   sunscreens.exit()
-  logging.info('Stop')
+  logger.info('Stop\n\n\n')
 
 def on_message(client, userdata, message):
     print("message received " ,str(message.payload.decode("utf-8")))

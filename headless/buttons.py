@@ -8,20 +8,20 @@ KNOP_NEER = 4
 KNOP_OP = 7
 knopNeerPushed = 0
 knopOpPushed = 0
-sunscreenStatus = "NEER" # default status
+sunscreenStatus = "OP" # default status
 busy = False
 sched = BackgroundScheduler() #daemon=True
 
 def button_op_callback(channel):
   global knopOpPushed
   if (knopOpPushed == 0):
-    Logging.info("Button OP was pushed!")
+    logger.info("Button OP was pushed!")
     knopOpPushed = 1
 
 def button_neer_callback(channel):
   global knopNeerPushed
   if (knopNeerPushed == 0):
-    Logging.info("Button NEER was pushed!")
+    logger.info("Button NEER was pushed!")
     knopNeerPushed = 1
 
 def check_knop_pushed():
@@ -42,7 +42,7 @@ def sunscreen(action):
   global busy
   
   if (action == "NEER" and sunscreenStatus == "NEER"): 
-    Logging.info("==>  scherm is al NEER\n")
+    logger.info("==>  scherm is al NEER")
     time.sleep(0.3)
     return  # niet meerdere keren NEER. OP is niet erg, die is begrensd door de overload functie
 
@@ -50,17 +50,18 @@ def sunscreen(action):
   busy = True
 
   if (action == "NEER"):
-    sunscreens.control(4, "down", 100, 1400)
+    sunscreens.control(4, "down", 100, 1500)
   else: 
-    sunscreens.control(4, "up", 100, 25000)
-    sunscreens.control(4, "down", 100, 25)
+    sunscreens.control(4, "up", 100, 26000)
+    sunscreens.control(4, "down", 100, 70)
   
   sunscreenStatus = action
-  logger.info("actie gestopt; status is nu " + sunscreenStatus + "\n")
+  logger.info("\nActie gestopt; status is nu " + sunscreenStatus + "\n")
   busy = False;
 
 
 def init():
+  global logger
   logger = logging.getLogger(__name__)
   logger.info('init')
   GPIO.setup(KNOP_NEER, GPIO.IN, pull_up_down=GPIO.PUD_UP)
