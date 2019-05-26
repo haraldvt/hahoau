@@ -10,6 +10,7 @@ knopNeerPushed = 0
 knopOpPushed = 0
 sunscreenStatus = "OP"
 busy = False
+sched = BackgroundScheduler() #daemon=True
 
 def button_op_callback(channel):
   global knopOpPushed
@@ -48,7 +49,11 @@ def sunscreen(action):
   print("start " + action)
   busy = True
 
-  sunscreens.control(4, "down" if action == "NEER" else "up", 100) 
+  if (action == "NEER"):
+    sunscreens.control(4, "down", 100, 13300)
+  else: 
+    sunscreens.control(4, "up", 100, 22000)
+    sunscreens.control(4, "down", 100, 30)
   
   sunscreenStatus = action
   print("stop; status is " + sunscreenStatus + "\n")
@@ -56,13 +61,14 @@ def sunscreen(action):
 
 
 def init():
-  GPIO.setup(KNOP_NEER, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
-  GPIO.setup(KNOP_OP, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+  GPIO.setup(KNOP_NEER, GPIO.IN, pull_up_down=GPIO.PUD_UP)
+  GPIO.setup(KNOP_OP, GPIO.IN, pull_up_down=GPIO.PUD_UP)
   
-  GPIO.add_event_detect(KNOP_NEER, GPIO.RISING, callback=button_neer_callback)
-  GPIO.add_event_detect(KNOP_OP, GPIO.RISING, callback=button_op_callback)
+  GPIO.add_event_detect(KNOP_NEER, GPIO.FALLING, callback=button_neer_callback, bouncetime=200)
+  GPIO.add_event_detect(KNOP_OP, GPIO.FALLING, callback=button_op_callback, bouncetime=200)
   
-  sched = BackgroundScheduler() #daemon=True
-  sched.add_job(check_knop_pushed, 'interval', seconds = 1)
+  sched.add_job(check_knop_pushed, 'interval', seconds = 1, id= 'buttons_interval')
   sched.start()
 
+def exit():
+  sched.remove_job('buttons_interval')

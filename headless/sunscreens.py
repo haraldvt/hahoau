@@ -18,6 +18,7 @@ currentMotorSpeed = 0
 timestamp_motor_power = 0
 status_motor_power = GPIO.LOW
 
+sched = BackgroundScheduler() #daemon=True
 # create a pigpio object, that accesses the pigpiod deamon (which handles the PWM to the motors)
 # to start the daemon: sudo pigpiod
 pi = pigpio.pi()
@@ -62,9 +63,8 @@ def turnOffMotors():
   global pi
   if not pi is None:
       print(" All off")
-      pi.set_PWM_dutycycle(MOTOR_1,  0)
+      pi.set_PWM_dutycycle(MOTOR_1, 0)
       pi.set_PWM_dutycycle(MOTOR_2, 0)
-
 
 
 
@@ -73,9 +73,9 @@ def motor_event(newSpeed):
     global pi
     speedrange = range(0)
     if (newSpeed > currentMotorSpeed):
-      speedrange = range(currentMotorSpeed, newSpeed, 10)
+      speedrange = range(currentMotorSpeed, newSpeed, 20)
     else:
-      speedrange = reversed(range(newSpeed, currentMotorSpeed, 10))
+      speedrange = reversed(range(newSpeed, currentMotorSpeed, 20))
     
     for speed in speedrange:
       if speed == 0:
@@ -136,8 +136,10 @@ def init():
   pi.set_mode(MOTOR_1 , pigpio.OUTPUT)
   pi.set_mode(MOTOR_2 , pigpio.OUTPUT)
   
+  sched.add_job(check_motor_power, 'interval', seconds = 20, id = 'suncscreens_interval')
+  sched.start()
+
   atexit.register(turnOffMotors)
 
-  sched = BackgroundScheduler() #daemon=True
-  sched.add_job(check_motor_power, 'interval', seconds = 20)
-  sched.start()
+def exit():
+  sched.remove_job('suncscreens_interval')

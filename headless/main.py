@@ -10,6 +10,10 @@ def init():
   buttons.init()
   sunscreens.init()
 
+def exit():
+  buttons.exit()
+  sunscreens.exit()
+
 def on_message(client, userdata, message):
     print("message received " ,str(message.payload.decode("utf-8")))
     print("message topic=",message.topic)
@@ -19,13 +23,14 @@ def on_message(client, userdata, message):
 
 init()
 
-client =mqtt.Client("pi_device")
-client.on_message=on_message        #attach function to callback
-client.username_pw_set("esp32", "hH809814")
-client.connect("hassio.local")
-client.subscribe("homeassistant/pi/no1/sunscreen4")
-client.loop_start()    #start the loop
+#client =mqtt.Client("pi_device")
+#client.on_message=on_message        #attach function to callback
+#client.username_pw_set("esp32", "hH809814")
+#client.connect("hassio.local")
+#client.subscribe("homeassistant/pi/no1/sunscreen4")
+#client.loop_start()    #start the loop
 
-message = input("Press enter to quit\n\n") # Run until someone presses enter
+message = raw_input("Press enter to quit\n\n") # Run until someone presses enter
+exit()
 GPIO.cleanup() # Clean up
-client.loop_stop() #stop the loop
+#client.loop_stop() #stop the loop
