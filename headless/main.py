@@ -2,17 +2,31 @@ import RPi.GPIO as GPIO # Import Raspberry Pi GPIO library
 GPIO.setwarnings(False) # Ignore warning for now
 GPIO.setmode(GPIO.BCM)
 import paho.mqtt.client as mqtt
+import logging
 
 import buttons
 import sunscreens
 
+class NoRunningFilter(logging.Filter):
+    def filter(self, record):
+        return False
+
 def init():
+
+  my_filter = NoRunningFilter()
+  logging.getLogger("apscheduler.scheduler").addFilter(my_filter)
+  logging.getLogger("apscheduler.executors.default").addFilter(my_filter)
+  
+  logging.basicConfig(filename='logging.log',level=logging.INFO)
+  logger = logging.getLogger(__name__)
+  logging.info('Start')
   buttons.init()
   sunscreens.init()
-
+  
 def exit():
   buttons.exit()
   sunscreens.exit()
+  logging.info('Stop')
 
 def on_message(client, userdata, message):
     print("message received " ,str(message.payload.decode("utf-8")))
