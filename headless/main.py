@@ -3,6 +3,7 @@ GPIO.setwarnings(False) # Ignore warning for now
 GPIO.setmode(GPIO.BCM)
 import paho.mqtt.client as mqtt
 import logging
+import time
 
 import buttons
 import sunscreens
@@ -18,7 +19,7 @@ def init():
   logging.getLogger("apscheduler.scheduler").addFilter(my_filter)
   logging.getLogger("apscheduler.executors.default").addFilter(my_filter)
   
-  logging.basicConfig(filename='logging.log',level=logging.INFO)
+  logging.basicConfig(filename='/home/pi/s/hahoau/headless/logging.log',level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
   logger = logging.getLogger(__name__)
   logger.info('Start')
   buttons.init()
@@ -45,7 +46,10 @@ init()
 #client.subscribe("homeassistant/pi/no1/sunscreen4")
 #client.loop_start()    #start the loop
 
-message = raw_input("Press enter to quit\n\n") # Run until someone presses enter
+while True:
+  time.sleep(0.3)
+
+#message = raw_input("Press enter to quit\n\n") # Run until someone presses enter
 exit()
 GPIO.cleanup() # Clean up
 #client.loop_stop() #stop the loop
