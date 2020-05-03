@@ -19,7 +19,7 @@ def init():
   logging.getLogger("apscheduler.scheduler").addFilter(my_filter)
   logging.getLogger("apscheduler.executors.default").addFilter(my_filter)
   
-  logging.basicConfig(filename='/home/pi/s/hahoau/headless/logging.log',level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+  logging.basicConfig(filename='/home/pi/share/pr/hahoau/headless/logging.log',level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
   logger = logging.getLogger(__name__)
   logger.info('Start')
   buttons.init()

@@ -32,7 +32,7 @@ def control(screen_id, movement, percentage, ms=5000.0):
     ss = [screen_id]
     if (screen_id == 0):
       ss = [1, 2, 3, 4]
-    print "relais ", ss, " on "
+    print("relais ", ss, " on ")
     for s in ss:
       GPIO.output(RELAY_SUNSCREEN[s-1], GPIO.LOW)
     time.sleep(1)
@@ -57,7 +57,7 @@ def control(screen_id, movement, percentage, ms=5000.0):
     time.sleep(1)
     for s in ss:
       GPIO.output(RELAY_SUNSCREEN[s-1], GPIO.HIGH)
-    print "relais ", ss, " off "
+    print("relais ", ss, " off ")
 
 
 # recommended for auto-disabling motors on shutdown!
